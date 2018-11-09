@@ -2,7 +2,8 @@
   add_host:
     hostname: "{{ item.vm_name }}"
     ansible_host: "{{ item['ips'][0].public_ip }}"
-    ansible_user: chouseknecht
-    ansible_ssh_pass: password123!
+    ansible_user: "{{ admin_user }}"
+    ansible_ssh_pass: "{{ admin_pass }}"
+    ansible_ssh_connection: winrm
     groupname: azure_vms
   with_items: "{{ output.deployment.instances }}"
