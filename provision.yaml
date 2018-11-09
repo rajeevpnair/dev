@@ -1,0 +1,13 @@
+---
+- hosts: localhost
+  gather_facts: yes
+  roles:
+   - vm
+
+- hosts: azure_vms
+  gather_facts: no
+  tasks:
+  - name: Install notepadplusplus version 6.6
+    win_chocolatey:
+      name: notepadplusplus
+      version: '6.6'
