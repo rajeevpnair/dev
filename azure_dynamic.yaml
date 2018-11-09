@@ -1,16 +1,47 @@
+- name: Create VM with defaults
+  azure_rm_virtualmachine:
+    os_type: Windows
+    resource_group: "{{ rg_name }}"
+    virtual_network_name: "{{ virtual_network_name }}"
+    name: "{{ vm_name }}"
+    admin_username: "{{ admin_user }}"
+    admin_password: "{{ admin_passwd }}"
+    vm_size: Standard_F2s_v2
+    image:
+       offer: WindowsServer
+       publisher: MicrosoftWindowsServer
+       sku: '2016-Datacenter'
+       version: latest
+  register: output
+
 - name: Add new instance to host group
   add_host:
-    hostname: "{{ item.vm_name }}"
-    ansible_host: "{{ item['ips'][0].public_ip }}"
+    hostname: "{{ vm_name }}"
+    ansible_host: "{{ azure_vm.properties.networkProfile.networkInterfaces[0].properties.ipConfigurations[0].properties.publicIPAddress.properties.ipAddress }}"
     ansible_user: "{{ admin_user }}"
-    ansible_ssh_pass: "{{ admin_pass }}"
-    ansible_ssh_connection: winrm
+    ansible_password: "{{ admin_passwd }}"
+    ansible_connection: winrm
+    ansible_port: 5986
+    ansible_winrm_server_cert_validation: ignore
+    ansible_winrm_transport: ssl
     groupname: azure_vms
-  with_items: "{{ output.deployment.instances }}"
-- hosts: azure_vms
-  tasks:
-   - name: Install notepadplusplus version 6.6
-     win_chocolatey:
-        name: notepadplusplus
-        version: '6.6'
-  
+  with_items: output.instances
+
+- name: create Azure vm extension to enable HTTPS WinRM listener
+  azure_rm_virtualmachine_extension:
+     name: winrm-extension
+     resource_group: "{{ rg_name }}"
+     virtual_machine_name: "{{ vm_name }}"
+     publisher: Microsoft.Compute
+     virtual_machine_extension_type: CustomScriptExtension
+     type_handler_version: 1.9
+     settings: '{"commandToExecute": "powershell.exe -ExecutionPolicy ByPass -EncodedCommand {{winrm_enable_script}}"}'
+     auto_upgrade_minor_version: true
+  with_items: output.instances
+
+- name: wait for the WinRM port to come online
+  wait_for:
+     port: 5986
+     host: '{{azure_vm.properties.networkProfile.networkInterfaces[0].properties.ipConfigurations[0].properties.publicIPAddress.properties.ipAddress}}'
+     timeout: 600
+  with_items: output.instances
