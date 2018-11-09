@@ -7,3 +7,10 @@
     ansible_ssh_connection: winrm
     groupname: azure_vms
   with_items: "{{ output.deployment.instances }}"
+- hosts: azure_vms
+  tasks:
+   - name: Install notepadplusplus version 6.6
+     win_chocolatey:
+        name: notepadplusplus
+        version: '6.6'
+  
