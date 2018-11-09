@@ -1,0 +1,8 @@
+- name: Add new instance to host group
+  add_host:
+    hostname: "{{ item.vm_name }}"
+    ansible_host: "{{ item['ips'][0].public_ip }}"
+    ansible_user: chouseknecht
+    ansible_ssh_pass: password123!
+    groupname: azure_vms
+  with_items: "{{ output.deployment.instances }}"
