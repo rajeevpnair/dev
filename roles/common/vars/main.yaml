@@ -1,0 +1,8 @@
+---
+rg_name : TestRG
+location : Central India
+vitual_network : TestVN
+CIDR : 10.3.0.0/16
+subnet : TestSubnet
+subnet_CIDR : 10.3.0.0/24
+security_group : TestSG
