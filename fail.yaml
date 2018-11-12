@@ -2,4 +2,4 @@
   
 - fail:
     msg: "something wrong"
-  when: output.results == failed
+  when: output.results is failed
