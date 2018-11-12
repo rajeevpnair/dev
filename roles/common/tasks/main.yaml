@@ -2,19 +2,20 @@
 - name: Get facts for one resource group
   azure_rm_resourcegroup_facts:
   register: output
-#- name: save the output to local file
-#  local_action: copy content={{ output }} dest=/tmp/output
-#- name: cat the output
-#  shell: cat /tmp/output
-#  register: file_output
+  
+- name: save the output to local file
+  local_action: copy content={{ output }} dest=/tmp/output
+- name: cat the output
+  shell: cat /tmp/output
+  register: file_output
 
 - name: Create a resource group
   azure_rm_resourcegroup:
    name: "{{ rg_name }}"
    location: "{{ location }}"
    state: present
-  when: ansible_facts.azure_resourcegroups[0].name != '{{ rg_name }}'
- # when: file_output.stdout.find('{{ rg_name }}') == -1
+  #when: ansible_facts.azure_resourcegroups[0].name != '{{ rg_name }}'
+  when: file_output.stdout.find('{{ rg_name }}') == -1
 
 - name: Create a virtual network
   azure_rm_virtualnetwork:
