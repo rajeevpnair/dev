@@ -1,4 +1,4 @@
-- name: Create VM with defaults
+- name: Create a VM 
   azure_rm_virtualmachine:
     os_type: Windows
     resource_group: "{{ rg_name }}"
@@ -14,7 +14,7 @@
        version: latest
   register: output
 
-- name: Add new instance to host group
+- name: Add new instance to the host group
   add_host:
     hostname: "{{ vm_name }}"
     ansible_host: "{{ azure_vm.properties.networkProfile.networkInterfaces[0].properties.ipConfigurations[0].properties.publicIPAddress.properties.ipAddress }}"
