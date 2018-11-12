@@ -90,7 +90,7 @@
    virtual_network_name: "{{ vitual_network }}"
    resource_group: "{{ rg_name }}"
    address_prefix_cidr: "{{ subnet_CIDR }}"
-   resource_group: 
+   security_group_name: 
       - windows_base
       - WMI
        
