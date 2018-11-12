@@ -1,0 +1,5 @@
+  register: output
+  
+- fail:
+    msg: "something wrong"
+  when: output.results == failed
