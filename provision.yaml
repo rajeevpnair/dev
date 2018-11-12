@@ -2,12 +2,13 @@
 - hosts: localhost
   gather_facts: yes
   roles:
+   - common
    - vm
 
 - hosts: azure_vms
   gather_facts: no
   tasks:
-  - name: Install notepadplusplus version 6.6
+  - name: Install notepadplusplus on the newly provitioned server.
     win_chocolatey:
       name: notepadplusplus
       version: '6.6'
