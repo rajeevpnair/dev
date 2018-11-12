@@ -1,4 +1,3 @@
-root@IcingaMaster:/home/rohit.sinhalala/playbooks/sample_app# cat roles/common/tasks/main.yaml
 ---
 - name: Get facts for one resource group
   azure_rm_resourcegroup_facts:
