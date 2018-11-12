@@ -23,12 +23,7 @@
    resource_group: "{{ rg_name }}"
    address_prefixes_cidr:
      - "{{ CIDR }}"
-- name: Create a subnet
-  azure_rm_subnet:
-   name: "{{ subnet }}"
-   virtual_network_name: "{{ vitual_network }}"
-   resource_group: "{{ rg_name }}"
-   address_prefix_cidr: "{{ subnet_CIDR }}"
+ 
 - name: Create network windows base security groups
   azure_rm_securitygroup:
     resource_group: "{{ rg_name }}"
@@ -87,3 +82,14 @@
        destination_port_range: 0-65535
        priority: 104
        direction: Inbound
+     
+- name: Create a subnet and adding the security group in to that.
+  azure_rm_subnet:
+   name: "{{ subnet }}"
+   virtual_network_name: "{{ vitual_network }}"
+   resource_group: "{{ rg_name }}"
+   address_prefix_cidr: "{{ subnet_CIDR }}"
+   resource_group: 
+       - windows_base
+       - WMI
+       
