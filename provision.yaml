@@ -1,10 +1,11 @@
+#Provitioning the infra and Virtual machine
 ---
 - hosts: localhost
   gather_facts: yes
   roles:
    - common
    - vm
-
+#Install some softwears in the newly provitioned server 
 - hosts: azure_vms
   gather_facts: no
   tasks:
