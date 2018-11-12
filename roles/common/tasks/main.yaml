@@ -49,6 +49,7 @@
        destination_port_range: 0-65535
        priority: 103
        direction: Inbound
+       
 - name: Create WMI Security group
   azure_rm_securitygroup:
     resource_group: "{{ rg_name }}"
@@ -83,13 +84,13 @@
        priority: 104
        direction: Inbound
      
-- name: Create a subnet and adding the security group in to that.
+- name: Create a subnet and adding the security groups in to that.
   azure_rm_subnet:
    name: "{{ subnet }}"
    virtual_network_name: "{{ vitual_network }}"
    resource_group: "{{ rg_name }}"
    address_prefix_cidr: "{{ subnet_CIDR }}"
    resource_group: 
-       - windows_base
-       - WMI
+      - windows_base
+      - WMI
        
