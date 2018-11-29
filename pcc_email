@@ -24,3 +24,12 @@ if (received_date == today and subject == 'mail_subject'):
     print (failed_jobs)
 else:
     print ("Didn't find any mails with subject mail_subject from sender mail_sender")
+
+
+
+import pandas as pd
+import tabula
+files = "filename.pdf"
+path = 'C:\\Users\\Himanshu Poddar\\Desktop\\datathon\\Himachal\\'  + file
+df = tabula.read_pdf(path, pages = '1', multiple_tables = True)
+print(df)
