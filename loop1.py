@@ -20,13 +20,13 @@ for message in list(messages):
     received_date = message.ReceivedTime.strftime("%Y-%m-%d")
     attachments = message.attachments
     attachment = attachments.Item(1)
-    attachment.SaveASFile(os.getcwd() + '\\' + str(attachment))
-    df = pd.read_excel('Book1.xlsx' , sheet_name='Sheet1')
-    Job_status = ['Failed', 'Partially Successful']
-    failed_jobs = df[[x in Job_status for x in df['Job Status']]]
-    print (failed_jobs)
     if subject == mail_subject and received_date == today:
-	       break
+	attachment.SaveASFile(os.getcwd() + '\\' + str(attachment))
+        df = pd.read_excel('Book1.xlsx' , sheet_name='Sheet1')
+        Job_status = ['Failed', 'Partially Successful']
+        failed_jobs = df[[x in Job_status for x in df['Job Status']]]
+        print (failed_jobs)
+	break
 
 print ("Didn't find any mails with subject mail_subject from sender mail_sender")
 os.remove(attachment)
