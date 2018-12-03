@@ -22,22 +22,24 @@ for message in list(messages):
 	attachment = attachments.Item(1)
 	if subject == mail_subject and received_date == today:
 		attachment.SaveASFile(os.getcwd() + '\\' + str(attachment))
-		df = pd.read_excel('Book1.xlsx' , sheet_name='Sheet1')
+		df = pd.read_excel( (os.getcwd() + '\\' + str(attachment)) , sheet_name='Sheet1')
 		Job_status = ['Failed', 'Partially Successful']
 		failed_jobs = df[[x in Job_status for x in df['Job Status']]]
 		break
 		
-n = (failed_jobs.shape[0])
-i = 0
-while (i < n):
-	description = ((failed_jobs.iat[i,9]), ' backup ', (failed_jobs.iat[i,4]), ' for Client server ', (failed_jobs.iat[i,2]), ', Master server is', (failed_jobs.iat[i,0]))
-	description = ''.join(description)
-	print (description)
-	i = i + 1
+try:
+  failed_jobs
+except NameError:
+  print ("There are no failed jobs reported")
+  exit()
+else:
+	n = (failed_jobs.shape[0])
+	i = 0
+	while (i < n):
+		description = ((failed_jobs.iat[i,9]), ' backup ', (failed_jobs.iat[i,4]), ' for Client server ', (failed_jobs.iat[i,2]), ', Master server is', (failed_jobs.iat[i,0]))
+		description = ''.join(description)
+		print (description)
+		i = i + 1
 	
-#Delete the files from the local system
-path = os.getcwd()
-files = os.listdir(path) 
-for item in files:
-	if item.endswith("xlsx"):
-		os.remove(os.path.join(path, item))
+#Delete the attachments from the local system
+os.remove(os.getcwd() + '\\' + str(attachment))
