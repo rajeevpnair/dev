@@ -1,0 +1,17 @@
+import pandas as pd
+import tabula
+from tabula import read_pdf
+
+files = "pdf.pdf"
+path = 'C:\\Users\\ictsadmin.BAPAA850\\Desktop\\raj\\' + files
+df = read_pdf('test.pdf')
+#df = tabula.read_pdf(path, pages = '1', multiple_tables = True)
+writer = pd.ExcelWriter('FILENAME'+ '.xlsx')
+
+
+
+
+Job_status = ['transition to support', 'in operation']
+failed_jobs = df[[x in Job_status for x in df['SystemStatus']]]
+print (failed_jobs)
+print (failed_jobs.iat[3,1])
