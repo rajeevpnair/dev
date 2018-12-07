@@ -1,8 +1,6 @@
-import pandas as pd
 import os
 import win32com.client
 import time
-from pandas import ExcelWriter
 import pickle
 
 mail_subject = "subjectpdf"
