@@ -92,3 +92,20 @@ else:
 #Delete the attachments from the local system
 os.remove(os.getcwd() + '\\' + str(attachment))
 
+
+
+from tabula import convert_into
+import pandas
+import numpy as np
+import csv
+
+convert_into("test.pdf", "test_s.csv", output_format="csv")
+df = pandas.read_csv("test_s.csv")
+df = df[df.host != 'host']
+df.to_csv('test_s1.csv', sep='|')
+df = pandas.read_csv("test_s1.csv")
+df = df.dropna()
+print (df)
+
+
+
