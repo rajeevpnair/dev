@@ -1,111 +1,57 @@
-import pandas as pd
-import tabula
-from tabula import read_pdf
-
-files = "pdf.pdf"
-path = 'C:\\Users\\ictsadmin.BAPAA850\\Desktop\\raj\\' + files
-df = read_pdf('test.pdf')
-#df = tabula.read_pdf(path, pages = '1', multiple_tables = True)
-writer = pd.ExcelWriter('FILENAME'+ '.xlsx')
-
-
-
-
-Job_status = ['transition to support', 'in operation']
-failed_jobs = df[[x in Job_status for x in df['SystemStatus']]]
-print (failed_jobs)
-print (failed_jobs.iat[3,1])
-
-
-
-import camelot
-tables = camelot.read_pdf('foo.pdf')
-tables.export('foo.csv', f='csv', compress=True) # json, excel, html
-tables[0]
-tables[0].parsing_report
-{
-    'accuracy': 99.02,
-    'whitespace': 12.24,
-    'order': 1,
-    'page': 1
-}
-tables[0].to_csv('foo.csv') # to_json, to_excel, to_html
-tables[0].df # get a pandas DataFrame!
-
-
-
-from pdf_table_extractor.pdf_table_extractor import extract_table_data
-tables = extract_table_data(open("test.pdf", "rb")).get_document()
-
-
-
-========================================================
-
-
-import pandas as pd
-from tabula import read_pdf
-import os
-import win32com.client
-import time
-from pandas import ExcelWriter
-
-mail_subject = "subjectpdf"
-outlook = win32com.client.Dispatch("Outlook.Application").GetNamespace("MAPI")
-inbox = outlook.GetDefaultFolder(6)
-inbox_sub = inbox.Folders("testbox")
-messages = inbox_sub.Items
-message = messages.GetLast()
-subject = message.Subject
-today = time.strftime('%Y-%m-%d')
-received_date = message.ReceivedTime.strftime("%Y-%m-%d")
-
-for message in list(messages):
-	subject = message.Subject
-	received_date = message.ReceivedTime.strftime("%Y-%m-%d")
-	attachments = message.attachments
-	attachment = attachments.Item(1)
-	if subject == mail_subject and received_date == today:
-		attachment.SaveASFile(os.getcwd() + '\\' + str(attachment))
-		df = read_pdf(os.getcwd() + '\\' + str(attachment), multiple_tables=True)
-		#df = df.dropna()
-		#Job_status = ['transition to support', 'in operation']
-		failed_jobs = df
-		#failed_jobs = df[[x in Job_status for x in df['SystemStatus']]]
-		print (failed_jobs)
-		break
-
-try:
-  failed_jobs
-except NameError:
-  print ("There are no failed jobs reported")
-  exit()
-else:
-	n = (failed_jobs.shape[0])
-	print (n)
-	i = 0
-	while (i < n):
-		description = ((failed_jobs.iat[i,5]), ' backup ', (failed_jobs.iat[i,4]), ' for Client server ', (failed_jobs.iat[i,2]), ', Master server is', (failed_jobs.iat[i,0]))
-		description = ''.join(description)
-		print (description)
-		i = i + 1
-
-#Delete the attachments from the local system
-os.remove(os.getcwd() + '\\' + str(attachment))
-
-
-
 from tabula import convert_into
 import pandas
 import numpy as np
 import csv
-
-convert_into("test.pdf", "test_s.csv", output_format="csv")
-df = pandas.read_csv("test_s.csv")
-df = df[df.host != 'host']
-df.to_csv('test_s1.csv', sep='|')
-df = pandas.read_csv("test_s1.csv")
-df = df.dropna()
-print (df)
+import os
 
 
+convert_into("test.pdf", "test.csv", output_format="csv", multiple_tables=True)
+df2 = pandas.read_csv("test.csv")
+df2 = df2.replace(np.nan, 'null_value')
 
+n2 = (df2.shape[0])
+
+for i in range(1,n2):
+	if df2.iat[i,1] == 'host':
+		break
+n = i
+# print (df2)
+print('')
+print('')
+try:
+  df2
+except NameError:
+  print ("There are no failed jobs reported")
+  exit()
+else:
+	i = 0
+	while (i < n):
+		if df2.iat[i,3] == 'null_value':
+			i = i + 1
+			description = ('server ', (df2.iat[i,1]), ' ', (df2.iat[i - 1 ,5]), (df2.iat[i,5]))
+			description = ''.join(description)
+			print (description)
+			i = i + 1
+		else:
+			description = ('server ', (df2.iat[i,1]), ' ', (df2.iat[i,5]))
+			description = ''.join(description)
+			print (description)
+			i = i + 1
+			
+	i = n+1
+	
+	while (i <= n2 - 1):
+		if df2.iat[i,3] == 'null_value':
+			i = i + 1
+			description = ('network device ', (df2.iat[i,1]), ' ', (df2.iat[i - 1 ,5]), (df2.iat[i,5]))
+			description = ''.join(description)
+			print (description)
+			i = i + 1
+		else:
+			description = ( 'network device ', (df2.iat[i,1]), ' ', (df2.iat[i,5]))
+			description = ''.join(description)
+			print (description)
+			i = i + 1
+#Delete the attachments from the local system
+#os.remove(os.getcwd() + '\\' + str(attachment))
+os.remove(os.getcwd() + '\\' + 'test.csv')
