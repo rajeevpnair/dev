@@ -43,7 +43,7 @@ except NameError:
 
 else:
 	for file in os.listdir(svdir):
-		if file.endswith("xlsx"):
+		if file.endswith(".pdf"):
 			files = (os.path.join(svdir, file))
 			print (files)
 			convert_into("files", "test.csv", output_format="csv", multiple_tables=True)
