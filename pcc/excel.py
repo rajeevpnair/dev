@@ -2,6 +2,7 @@ import imaplib
 import email
 import os
 import datetime
+import pandas as pd
  
 svdir = os.getcwd()
 
@@ -11,9 +12,7 @@ mail.select("INBOX")
 
 date = date = datetime.datetime.now().strftime("%d-%b-%Y")
 
-typ, msgs = mail.search(None, '(SENTON {date} FROM "SV, Aneesh" SUBJECT "test_mail")'.format(date=date))
-
-print (msgs)
+typ, msgs = mail.search(None, '(SENTON {date} FROM "Padinharepattu, Rajeev" SUBJECT "test_mail")'.format(date=date))
 
 msgs = msgs[0].split()
 
@@ -41,22 +40,24 @@ for emailid in msgs:
                 fp = open(sv_path, 'wb')
                 fp.write(part.get_payload(decode=True))
                 fp.close()
+                
 				
-				df = pd.read_excel( (os.getcwd() + '\\' + str(filename)) , sheet_name='Sheet1')
-				Job_status = ['Failed', 'Partially Successful']
-				failed_jobs = df[[x in Job_status for x in df['Job Status']]]
-				try:
-					failed_jobs
-				except NameError:
-					print ("There are no failed jobs reported")
-					exit()
-				else:
-					n = (failed_jobs.shape[0])
-					i = 0
-					while (i < n):
-						description = ((failed_jobs.iat[i,9]), ' backup ', (failed_jobs.iat[i,4]), ' for Client server ', (failed_jobs.iat[i,2]), ', Master server is', (failed_jobs.iat[i,0]))
-						description = ''.join(description)
-						print (description)
-						i = i + 1
-				#Delete the attachments from the local system
-				os.remove(os.getcwd() + '\\' + str(filename))
+df = pd.read_excel( (os.getcwd() + '\\' + str(filename)) , sheet_name='Sheet1')
+Job_status = ['Failed', 'Partially Successful']
+failed_jobs = df[[x in Job_status for x in df['Job Status']]]
+try:
+    failed_jobs
+except NameError:
+	print ("There are no failed jobs reported")
+	exit()
+
+else:
+    n = (failed_jobs.shape[0])
+    i = 0
+    while (i < n):
+        description = ('Ticket description: ', (failed_jobs.iat[i,9]), ' backup ', (failed_jobs.iat[i,4]), ' for Client server ', (failed_jobs.iat[i,2]), ', Master server is ', (failed_jobs.iat[i,0]), '\n')
+        description = ''.join(description)
+        print (description)
+        i = i + 1
+    
+
