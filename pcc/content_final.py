@@ -44,7 +44,6 @@ else:
             df.columns = df.iloc[0]
             col = ['Specification','Session Type', 'Mode', 'Status', 'Start Time', 'Duration', 'GB Written', '# Files', '# Warnings', '# Errors', 'Duration']
             df[col] = df[col].replace({'=':''}, regex=True)
-            print (df)
             df = df.loc[df['Status'] == 'Failed']
             print (df['Session ID'])
             n = (df.shape[0])
@@ -57,3 +56,4 @@ else:
                 print (description)
                 print (ticket_description)
                 i = i + 1
+            os.remove(files)
