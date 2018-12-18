@@ -14,7 +14,7 @@ mail.select("INBOX")
 
 date = date = datetime.datetime.now().strftime("%d-%b-%Y")
 
-typ, msgs = mail.search(None, '(SENTON {date} FROM "Padinharepattu, Rajeev" SUBJECT "test_mail")'.format(date=date))
+typ, msgs = mail.search(None, '(SENTON {date} FROM "Padinharepattu, Rajeev" SUBJECT "test_mail_content")'.format(date=date))
 
 
 
