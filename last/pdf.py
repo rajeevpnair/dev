@@ -50,52 +50,52 @@ else:
         if file.endswith(".pdf"):
             files = (os.path.join(svdir, file))
             convert_into(files, "test.csv", output_format="csv", multiple_tables=True)
-			df2 = pandas.read_csv("test.csv")
-			df2 = df2.replace(np.nan, 'null_value')
-			n2 = (df2.shape[0])
+            df2 = pandas.read_csv("test.csv")
+            df2 = df2.replace(np.nan, 'null_value')
+            n2 = (df2.shape[0])
 			
-			for i in range(1,n2):
-				if df2.iat[i,1] == 'host':
-				break
+            for i in range(1,n2):
+                if df2.iat[i,1] == 'host':
+                    break
 				
-			n = i
-			print('')
-			print('')
+            n = i
+            print('')
+            print('')
 			
-			try:
-				df2
-			except NameError:
-				print ("There are no failed jobs reported")
-				exit()
+            try:
+                df2
+            except NameError:
+                print ("There are no failed jobs reported")
+                exit()
 				
-			else:
-				i = 0
-				while (i < n):
-					if df2.iat[i,3] == 'null_value':
-						i = i + 1
-						description = ('server ', (df2.iat[i,1]), ' ', (df2.iat[i - 1 ,5]), (df2.iat[i,5]))
-						description = ''.join(description)
-						print (description)
-						i = i + 1
-					else:
-						description = ('server ', (df2.iat[i,1]), ' ', (df2.iat[i,5]))
-						description = ''.join(description)
-						print (description)
-						i = i + 1
+            else:
+                i = 0
+                while (i < n):
+                    if df2.iat[i,3] == 'null_value':
+                        i = i + 1
+                        description = ('server ', (df2.iat[i,1]), ' ', (df2.iat[i - 1 ,5]), (df2.iat[i,5]))
+                        description = ''.join(description)
+                        print (description)
+                        i = i + 1
+                    else:
+                        description = ('server ', (df2.iat[i,1]), ' ', (df2.iat[i,5]))
+                        description = ''.join(description)
+                        print (description)
+                        i = i + 1
 			
-				i = n+1
+                i = n+1
 	
-				while (i <= n2 - 1):
-					if df2.iat[i,3] == 'null_value':
-						i = i + 1
-						description = ('network device ', (df2.iat[i,1]), ' ', (df2.iat[i - 1 ,5]), (df2.iat[i,5]))
-						description = ''.join(description)
-						print (description)
-						i = i + 1
-					else:
-						description = ( 'network device ', (df2.iat[i,1]), ' ', (df2.iat[i,5]))
-						description = ''.join(description)
-						print (description)
-						i = i + 1
+                while (i <= n2 - 1):
+                    if df2.iat[i,3] == 'null_value':
+                        i = i + 1
+                        description = ('network device ', (df2.iat[i,1]), ' ', (df2.iat[i - 1 ,5]), (df2.iat[i,5]))
+                        description = ''.join(description)
+                        print (description)
+                        i = i + 1
+                    else:
+                        description = ( 'network device ', (df2.iat[i,1]), ' ', (df2.iat[i,5]))
+                        description = ''.join(description)
+                        print (description)
+                        i = i + 1
 			#Delete the attachments from the local system
-			os.remove(files)
+            os.remove(files)
