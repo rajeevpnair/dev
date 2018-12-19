@@ -13,7 +13,7 @@ mail.select("INBOX")
 
 date = date = datetime.datetime.now().strftime("%d-%b-%Y")
 
-typ, msgs = mail.search(None, '(SENTON {date} FROM "Padinharepattu, Rajeev" SUBJECT "test")'.format(date=date))
+typ, msgs = mail.search(None, '(SENTON {date} FROM "Padinharepattu, Rajeev" SUBJECT "pcc_excel")'.format(date=date))
 count = len(msgs[0].split())
 
 for num in msgs[0].split():
