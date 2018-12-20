@@ -51,7 +51,7 @@ else:
             n = (df.shape[0])
             i = 0
             while (i < n):
-                description = ''.join(('Backup error for ', (df.iat[i,1]), 'Session ID ', (df.iat[i,14])))
+                description = ''.join(('Backup error for ', (df.iat[i,1]), ' Session ID ', (df.iat[i,14])))
                 title = ''.join(('Backup error for ', (df.iat[i,1])))
                 CI = (df.iat[i,1])
                 url = 'https://6.152.112.14:8443/oo/rest/v2/executions/'
