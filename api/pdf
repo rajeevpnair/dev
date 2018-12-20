@@ -1,0 +1,115 @@
+import imaplib
+import email
+import os
+import datetime
+import pickle
+import pandas as pd
+import sys
+import requests
+import json
+from base64 import b64encode
+import xml.etree.ElementTree as E
+import json
+
+svdir = os.getcwd()
+filename = 'None'
+mail=imaplib.IMAP4_SSL('imap-intern.telekom.de')
+mail.login("rajeev.padinharepattu@t-systems.com","Ammukutt!2")
+mail.select("INBOX")
+
+date = date = datetime.datetime.now().strftime("%d-%b-%Y")
+
+typ, msgs = mail.search(None, '(SENTON {date} FROM "Padinharepattu, Rajeev" SUBJECT "pcc_content")'.format(date=date))
+count = len(msgs[0].split())
+
+for num in msgs[0].split():
+    typ, data = mail.fetch(num, '(RFC822)')
+    email_body = data[0][1] 
+    email_body = email_body.decode('utf-8')
+    m = email.message_from_string(email_body)
+    newfile = str(num) + '.html'
+    output = open(newfile, 'wb')
+    pickle.dump(m, output)
+    output.close()
+
+    
+if count == 0:
+    print ('No mails found')
+    sys.exit()
+else:
+    for file in os.listdir(svdir):
+        if file.endswith(".html"):
+            files = (os.path.join(svdir, file))
+            pd.set_option('display.expand_frame_repr', False)
+            df = pd.read_html(files, encoding='utf')
+            df = df[0].dropna(axis=0, thresh=4)
+            df.columns = df.iloc[0]
+            df.columns = ['Session Type', 'Specification', 'Status', 'Mode', 'Start Time', 'Queuing', 'Duration', 'GB written', 'Media', 'Errors', 'Warnings', 'files', 'Success', 'Null', 'Session Id']
+            col = ['Session Type', 'Specification', 'Status', 'Mode', 'Start Time', 'Queuing', 'Duration', 'GB written', 'Media', 'Errors', 'Warnings', 'files', 'Success', 'Null', 'Session Id']
+            df[col] = df[col].replace({'=':''}, regex=True)
+            df = df.loc[df['Status'] == 'Failed']
+            n = (df.shape[0])
+            i = 0
+            while (i < n):
+                description = ''.join(('Backup error for ', (df.iat[i,1]), 'Session ID ', (df.iat[i,14])))
+                title = ''.join(('Backup error for ', (df.iat[i,1])))
+                CI = (df.iat[i,1])
+                url = 'https://6.152.112.14:8443/oo/rest/v2/executions/'
+                data = '''{
+                "flowUuid":               "114ae4a6-e2cf-47e6-97e7-a76a6e153439", 
+                "runName":                "AOC_create_INM_run_1234",
+                "logLevel":               "STANDARD", 
+                "inputs": {
+                        "assignmentGroup":     "C.DPS.MY.CCO.SH.WIN.EVT",
+                        "customer":            "SHELL/SHELL",
+                        "title":               "'''+ title +'''",
+                        "category1":           "???",
+                        "category2":           "?",
+                        "causingCI":           "'''+ CI +'''",
+                        "description":         "'''+ description +'''",
+                        "reportedByUserId":    "rrawat",
+                        "reportedByLastName":  "Rawat",
+                        "reportedByFirstName": "Rajat",
+                        "contactLastName":     "Rawat",
+                        "contactFirstName":    "Rajat",
+                        "criticality":         "LOW",
+                        "serviceRestriction":  "LOW",
+                        "openGroup":           "C.SH.MY.WIN.EVT",
+                        "priority":            "4",
+                        "Urgency":             "Low"
+                            
+                        }
+                }'''
+
+                proxies = {
+                        "http": None,
+                        "https": None,
+                        }
+
+                userAndPass = b64encode(b"rrawat:Welcome7").decode("ascii")
+                headers = {'Content-Type': 'application/json', 'Authorization' : 'Basic %s' %  userAndPass }
+                jobid = requests.post(url, data=data, headers=headers, verify=False, proxies=proxies)
+                print('Job ID : ' + str(jobid.text))
+                url = 'https://6.152.112.14:8443/oo/rest/v2/executions/{0}/execution-log'.format(jobid.text)
+                print(url)
+                jsonDoc = ''
+                # run job until result is ok
+                stat='RUNNING'
+                j=0
+                while stat == 'RUNNING' :
+                    time.sleep(1)
+                    j=j+1
+                    print(str(j) + ' ')
+                    jsonDoc = requests.get(url, headers=headers, verify=False, proxies=proxies)
+                    executionSummaryDict = json.loads(jsonDoc.text)
+                    stat = executionSummaryDict["executionSummary"]["status"]
+                    print('status: '+stat)
+                        
+                summaryDict = json.loads(jsonDoc.text)
+                xmlDocument = summaryDict["flowOutput"]["document"]
+                print(xmlDocument)
+                root = ET.fromstring(xmlDocument)
+                incidentId = root.find("Body/CreateTsiIncidentResponse/model/instance/IncidentID")
+                print('Incident ID : '+ incidentId.text)
+                i = i + 1
+            os.remove(files)
