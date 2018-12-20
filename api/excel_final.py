@@ -5,7 +5,6 @@ import datetime
 import pandas as pd
 import sys
 import requests
-import time
 import json
 from base64 import b64encode
 import xml.etree.ElementTree as E
