@@ -9,7 +9,6 @@ import requests
 import json
 from base64 import b64encode
 import xml.etree.ElementTree as E
-import json
 
 svdir = os.getcwd()
 filename = 'None'
