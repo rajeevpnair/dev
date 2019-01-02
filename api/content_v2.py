@@ -107,7 +107,8 @@ else:
             df.columns = ['Session Type', 'Specification', 'Status', 'Mode', 'Start Time', 'Queuing', 'Duration', 'GB written', 'Media', 'Errors', 'Warnings', 'files', 'Success', 'Null', 'Session Id']
             col = ['Session Type', 'Specification', 'Status', 'Mode', 'Start Time', 'Queuing', 'Duration', 'GB written', 'Media', 'Errors', 'Warnings', 'files', 'Success', 'Null', 'Session Id']
             df[col] = df[col].replace({'=':''}, regex=True)
-            df = df.loc[df['Status'] == 'Failed']
+            Job_status = ['Completed/Failures', 'In Progress/Failures', 'Failed', 'Aborted']
+            df = df[[x in Job_status for x in df['Status']]]
             n = (df.shape[0])
             i = 0
             while (i < n):
