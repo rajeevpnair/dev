@@ -32,3 +32,8 @@ if r.status_code == 200:
 else:
    print ('there was an error logging in')
    print (r.status_code)
+   
+   clientPropsReq = service + "job?"
+# build headers with the received token
+headers = {'Authtoken': token}
+r = requests.get(clientPropsReq, headers=headers)
