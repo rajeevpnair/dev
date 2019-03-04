@@ -1,10 +1,15 @@
 import requests
 import sys
 import xml.etree.ElementTree as ET
+from xml.etree import ElementTree
+import random
+
+
 import base64
+import json
 
 
-service = 'http://104.211.245.148/webconsole/api/'
+service = 'http://13.71.114.59/webconsole/api/'
 
 loginReq = '<DM2ContentIndexing_CheckCredentialReq username="Cvadmin" password="<<password>>" />'
 
@@ -23,17 +28,66 @@ if r.status_code == 200:
       token = root.attrib['token']
       print ("Login Successful")
       print (r.status_code)
-      print (token)
+      #print (token)
    else:
       print ("Login Failed")
       print (r.status_code)
-      print (token)
       sys.exit(0)
 else:
    print ('there was an error logging in')
    print (r.status_code)
-   
-   clientPropsReq = service + "job?"
-# build headers with the received token
+
+
+clientlist = "http://13.71.114.59/webconsole/api/Client"
+#build headers with the received token
+headers = {'Authtoken': token, 'Content-Type': 'application/xml'}
+r = requests.get(clientlist, headers=headers)
+#print (r.text)
+
+#print (r.text)
+root = ElementTree.fromstring(r.content)
+client_details = []
+for child in root.iter('clientEntity'):
+    client_details.append(child.attrib['clientId'])
+print (client_details)
+
+
+clientId = random.sample(client_details, 2)
+#print (rand_items)
+
+backup_client = 3
+client_hirarchi = "http://13.71.114.59/webconsole/api/Client/3/Hierarchy?backedUp=True"
 headers = {'Authtoken': token}
-r = requests.get(clientPropsReq, headers=headers)
+r = requests.get(client_hirarchi, headers=headers)
+print (r.status_code)
+print (r.text)
+
+browse = "http://13.71.114.59/webconsole/api/DoBrowse"
+
+xml ="""<databrowse_BrowseRequest opType="browse">
+  <entity clientName="cvclient" applicationId="33" clientId="3" subclientId="5" backupsetId="6" instanceId="1"/>
+  <paths path="C:\\WindowsAzure\\CollectGuestLogsTemp"/>
+  <options showDeletedFiles="1" restoreIndex="1"/>
+  <mode mode="2"/>
+  <queries type="1" queryId="countQuery">
+    <aggrParam aggrType="4" field="0"/>
+  </queries>
+  <queries type="0" queryId="dataQuery">
+    <dataParam>
+      <paging firstNode="0" skipNode="0" pageSize="15"/>
+      <sortParam ascending="1">
+        <sortBy val="38"/>
+        <sortBy val="0"/>
+      </sortParam>
+    </dataParam>
+  </queries>
+</databrowse_BrowseRequest>"""
+
+r = requests.post(browse, data=xml, headers=headers)
+print (r.status_code)
+
+print (r.text)
+
+
+
+
