@@ -3,13 +3,15 @@ import sys
 import xml.etree.ElementTree as ET
 from xml.etree import ElementTree
 import random
+import xmltodict
+import json
 
 
 import base64
 import json
 
 
-service = 'http://13.71.114.59/webconsole/api/'
+service = 'http://52.172.55.134/webconsole/api/'
 
 loginReq = '<DM2ContentIndexing_CheckCredentialReq username="Cvadmin" password="<<password>>" />'
 
@@ -38,7 +40,7 @@ else:
    print (r.status_code)
 
 
-clientlist = "http://13.71.114.59/webconsole/api/Client"
+clientlist = service + "Client"
 #build headers with the received token
 headers = {'Authtoken': token, 'Content-Type': 'application/xml'}
 r = requests.get(clientlist, headers=headers)
@@ -56,13 +58,13 @@ clientId = random.sample(client_details, 2)
 #print (rand_items)
 
 backup_client = 3
-client_hirarchi = "http://13.71.114.59/webconsole/api/Client/3/Hierarchy?backedUp=True"
+client_hirarchi = service + "Client/3/Hierarchy?backedUp=True"
 headers = {'Authtoken': token}
 r = requests.get(client_hirarchi, headers=headers)
 print (r.status_code)
 print (r.text)
 
-browse = "http://13.71.114.59/webconsole/api/DoBrowse"
+browse = service + "DoBrowse"
 
 xml ="""<databrowse_BrowseRequest opType="browse">
   <entity clientName="cvclient" applicationId="33" clientId="3" subclientId="5" backupsetId="6" instanceId="1"/>
@@ -86,8 +88,8 @@ xml ="""<databrowse_BrowseRequest opType="browse">
 r = requests.post(browse, data=xml, headers=headers)
 print (r.status_code)
 
-print (r.text)
-
-
-
-
+#print (r.text)
+json = (xmltodict.parse(r.text))
+print(type(json))
+for i in json['databrowse_BrowseResponseList']['browseResponses'][1]['browseResult']['dataResultSet']:
+    print(i['@path'],i['@size'])
