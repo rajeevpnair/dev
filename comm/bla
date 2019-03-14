@@ -1,0 +1,29 @@
+
+
+restore = service + "retrieveToClient"
+xml ="""<DM2ContentIndexing_RetrieveToClientReq mode="2" serviceType="1">
+<userInfo userGuid=""/>
+<header>
+<srcContent clientId="" appTypeId="" instanceId="" backupSetId="" subclientId="" fromTime="" toTime=""/>
+<destination clientId="" clientName="" inPlace="">
+<destPath val=""/>
+</destination>
+<filePaths val=""/>
+<filePaths val=""/>
+</header>
+<advanced unconditionalOverwrite="" restoreDataAndACL="1" restoreDeletedFiles="1"/>
+</DM2ContentIndexing_RetrieveToClientReq>"""
+
+r = requests.get(restore, headers=headers)
+
+
+
+
+
+get_user = service + "user"
+r = requests.get(get_user, headers=headers)
+print (r.status_code)
+print (r.text)
+#userGUID="4C1C8327-233F-46F5-910B-E873FBEBE494"
+
+ 
