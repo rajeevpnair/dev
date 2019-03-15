@@ -5,6 +5,10 @@ from xml.etree import ElementTree
 import random
 import xmltodict
 import json
+from datetime import datetime, timedelta
+from datetime import datetime
+import time
+
 
 from random import randint
 
@@ -12,7 +16,7 @@ import base64
 import json
 global b
 
-service = 'http://52.172.54.49/webconsole/api/'
+service = 'http://13.71.120.215/webconsole/api/'
 
 loginReq = '<DM2ContentIndexing_CheckCredentialReq username="Cvadmin" password="<<password>>" />'
 
@@ -38,7 +42,13 @@ if r.status_code == 200:
 else:
    print ('there was an error logging in')
    print (r.status_code)
-headers = {'Authtoken': token, 'Content-Type': 'application/xml'}  
+headers = {'Authtoken': token, 'Content-Type': 'application/xml'}
+
+now = datetime.now()
+hours_before = datetime.now() - timedelta(hours=4800)
+
+to_time = (int(time.mktime(now.timetuple())))
+from_time = (int(time.mktime(hours_before.timetuple())))
 
 def browse_client():
     
@@ -56,6 +66,8 @@ def browse_client():
     applicationId = dic['TMMsg_GetTaskDetailResp']['taskInfo']['associations'][s1]['@applicationId']
     clientId = dic['TMMsg_GetTaskDetailResp']['taskInfo']['associations'][s1]['@clientId']
     clientName = dic['TMMsg_GetTaskDetailResp']['taskInfo']['associations'][s1]['@clientName']
+    
+    
     subclient_BROWSE = service + "Subclient/"+subclientId+"/Browse?path=%5C"
     headers = {'Authtoken': token}
     
@@ -86,13 +98,14 @@ b=browse_client()
 b=list(b)
 z=b[7]
 
-def browse_data(b,z):
+def browse_data(b,z,to_time,from_time):
     path1 = []
     restore_file = []
     browse = service + "DoBrowse"
     xml ="""<databrowse_BrowseRequest opType="browse">
       <entity clientName="{}" applicationId="{}" clientId="{}" subclientId="{}" backupsetId="{}" instanceId="{}"/>
       <paths path="{}"/>
+      <timeRange toTime="{}" fromTime="{}"/>
       <options showDeletedFiles="1" restoreIndex="1"/>
       <mode mode="2"/>
       <queries type="1" queryId="countQuery">
@@ -107,7 +120,7 @@ def browse_data(b,z):
           </sortParam>
         </dataParam>
       </queries>
-    </databrowse_BrowseRequest>""".format(b[6],b[4],b[5],b[0],b[1],b[3],z)
+    </databrowse_BrowseRequest>""".format(b[6],b[4],b[5],b[0],b[1],b[3],z,to_time,from_time)
     print (xml)
     
     r = requests.post(browse, data=xml, headers=headers)
@@ -148,34 +161,57 @@ def browse_data(b,z):
         else:
             if path1:
                 print ("directory of size more than 0 MB", path1)
-                path2 = random.shuffle(path1)
+                #path2 = random.shuffle(path1)
               # print(len(path1))
                 for i in range(0,len(path1)):
                     z = path1[i]
                     print (" browsing with new path", z)
-                    g = browse_data(b,z)
+                    g = browse_data(b,z,to_time,from_time)
                     return g
                     print ("New browsing path", path1[i])
             else:
-                print ("Brsing 2 new clients as no directries found with more than 0 bytes size")
+                print ("Browsing 2 new clients as no directries found with more than 0 bytes size")
                 b=browse_client()
                 z=b[7]
-                g = browse_data(b,z)
+                g = browse_data(b,z,to_time,from_time)
                 return g
-                
-                          
+                                    
     else:
         print ("Browsing new client")
         b=browse_client()
         z=b[7]
-        g = browse_data(b,z)
+        g = browse_data(b,z,to_time,from_time)
         return g
 
-g=browse_data(b,z)
+g=browse_data(b,z,to_time,from_time)
 restore_file = g
 print (" files returning", restore_file)
 restore_file1 = random.choice(restore_file)
 print ("file to restore is:", restore_file1)
+
+def restore_data(b,from_time,to_time,restore_file1):
+    
+    restore = service + "retrieveToClient"
+    xml ="""<DM2ContentIndexing_RetrieveToClientReq mode="2" serviceType="1">
+    <userInfo userGuid="4C1C8327-233F-46F5-910B-E873FBEBE494"/>
+    <header>
+    <srcContent clientId="{}" appTypeId="29" instanceId="{}" backupSetId="{}" subclientId="{}" fromTime="{}" toTime="{}"/>
+    <destination clientId="{}" clientName="{}" inPlace="0">
+    <destPath val="/tmp/"/>
+    </destination>
+    <filePaths val="{}"/>
+    </header>
+    <advanced unconditionalOverwrite="0" restoreDataAndACL="1" restoreDeletedFiles="1"/>
+    </DM2ContentIndexing_RetrieveToClientReq>""".format(b[5],b[3],b[1],b[0],from_time,to_time,b[5],b[6],restore_file1)
+    
+    print (xml)
+
+    r = requests.post(restore, data=xml, headers=headers)
+    print (r.status_code)
+    print (r.text)
+    return
+
+restore_data(b,from_time,to_time,restore_file1)
 
 
         
