@@ -208,10 +208,21 @@ def restore_data(b,from_time,to_time,restore_file1):
 
     r = requests.post(restore, data=xml, headers=headers)
     print (r.status_code)
-    print (r.text)
-    return
+    dictionary = (xmltodict.parse(r.text))
+    jobId = dictionary['DM2ContentIndexing_RetrieveToClientResp']['@jobId']
+    print (jobId)
+    return jobId
 
-restore_data(b,from_time,to_time,restore_file1)
+k = restore_data(b,from_time,to_time,restore_file1)
 
-
+def job_status(k):
+    job = service + "Job/"+k
+    r = requests.get(job, headers=headers)
+    print (r.status_code)
+    dictionary = (xmltodict.parse(r.text))
+    print (dictionary)
+    
+job_status(k)
+    
+    
         
