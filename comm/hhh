@@ -1,19 +1,25 @@
-#Declare unique instance variables
-$ClientID = "d5987aef-6fa5-4526-b4bb-de81be6322e4"
-$ClientSecret = "zBj4JK2tqgRC6mPoVOd3WQFaLKNNutYTJcOwkF5ELLo="
-$TenantDomain = "vpaliath.onmicrosoft.com"
-$OutputDirectory = "D:\Reports"
-#Declare static variables
-$loginURL = 'https://login.microsoft.com'
-$resource = 'https://graph.microsoft.com'
-#Build OAuth tequest
-$body = @{grant_type="client_credentials";resource=$resource;client_id=$ClientID;client_secret=$ClientSecret}
-#Request OAuth token
-$oauth = Invoke-RestMethod -Method Post -Uri $loginURL/$TenantDomain/oauth2/token?api-version=1.0 -Body $body
-#If OAuth was successful request data from Microsoft Graph
-If($null -ne $oauth.access_token)
-{
-#Build Microsoft Graph web request
-$headerParams = @{Authorization="$($oauth.token_type) $($oauth.access_token)"}
-}
-#######################Sign-In Details#########################################
+import requests
+
+ClientID = "d5987aef-6fa5-4526-b4bb-de81be6322e4"
+ClientSecret = "zBj4JK2tqgRC6mPoVOd3WQFaLKNNutYTJcOwkF5ELLo="
+TenantDomain = "vpaliath.onmicrosoft.com"
+OutputDirectory = "D:\Reports"
+
+loginURL = 'https://login.microsoft.com'
+
+#Build OAuth teques
+post_data = {'grant_type': 'client_credentials',
+             'resource': 'https://graph.microsoft.com',
+             'client_id': 'd5987aef-6fa5-4526-b4bb-de81be6322e4',
+             'client_secret': 'zBj4JK2tqgRC6mPoVOd3WQFaLKNNutYTJcOwkF5ELLo'
+             }
+
+r = requests.post(loginURL + TenantDomain +"oauth2/token?api-version=1.0")
+if r.status_code == 200:
+   root = ET.fromstring(r.text)
+   if 'token' in root.attrib:
+      token = root.attrib['token']
+      print ("Login Successful")
+      print (token)
+else:
+    print ("login Unsuccessful")
