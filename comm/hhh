@@ -1,4 +1,11 @@
 import requests
+import xml.etree.ElementTree as ET
+import json
+import xml.etree.ElementTree as ET
+from xml.etree import ElementTree
+import random
+import xmltodict
+
 
 ClientID = "d5987aef-6fa5-4526-b4bb-de81be6322e4"
 ClientSecret = "zBj4JK2tqgRC6mPoVOd3WQFaLKNNutYTJcOwkF5ELLo="
@@ -9,20 +16,33 @@ loginURL = 'https://login.microsoft.com'
 
 #Build OAuth teques
 post_data = {'grant_type': 'client_credentials',
+             'code': 'auth_code',
              'resource': 'https://graph.microsoft.com',
              'client_id': 'd5987aef-6fa5-4526-b4bb-de81be6322e4',
-             'client_secret': 'zBj4JK2tqgRC6mPoVOd3WQFaLKNNutYTJcOwkF5ELLo'
+             'client_secret': 'zBj4JK2tqgRC6mPoVOd3WQFaLKNNutYTJcOwkF5ELLo='
              }
 
-r = requests.post(loginURL + TenantDomain +"oauth2/token?api-version=1.0")
-if r.status_code == 200:
-   root = ET.fromstring(r.text)
-   if 'token' in root.attrib:
-      token = root.attrib['token']
-      print ("Login Successful")
-      print (token)
-else:
-    print ("login Unsuccessful")
+xml = """<grant_type="client_credentials" resource="https://graph.microsoft.com" client_id="d5987aef-6fa5-4526-b4bb-de81be6322e4" client_secret="zBj4JK2tqgRC6mPoVOd3WQFaLKNNutYTJcOwkF5ELLo="/>"""
+
+url = loginURL + "/" + TenantDomain +"/oauth2/token?api-version=1.0"
+r = requests.post(url, data = post_data)
+print (r.status_code)
+
+try:
+    access_token = r.json()['access_token']
+except:
+    print("tokrn error")
+    
+print (access_token)
+
+headers = {'Authorization': access_token, 'Content-Type': 'application/xml'}
 
 
-https://blogs.technet.microsoft.com/exchange/2019/01/21/monitoring-exo-user-client-access-and-usage-with-graph-powershell-and-power-bi/
+url = 'https://graph.microsoft.com/beta/auditLogs/signIns'
+
+r = requests.get(url, headers=headers)
+
+a = r.text
+
+
+print (a.odata.context)
