@@ -23,3 +23,6 @@ if r.status_code == 200:
       print (token)
 else:
     print ("login Unsuccessful")
+
+
+https://blogs.technet.microsoft.com/exchange/2019/01/21/monitoring-exo-user-client-access-and-usage-with-graph-powershell-and-power-bi/
