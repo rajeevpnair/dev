@@ -1,0 +1,9 @@
+param(
+   [string] $user
+)
+Add-LocalGroupMember -Group "Administrators" -Member $user
+
+param(
+   [string] $user
+)
+Remove-LocalGroupMember -Group "Administrators" -Member $user
